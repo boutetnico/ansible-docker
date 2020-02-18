@@ -90,6 +90,15 @@
     append: true
   loop: "{{ docker__users }}"
 
+- name: Configure containerd options
+  template:
+    src: "etc/containerd/config.toml.j2"
+    dest: "/etc/containerd/config.toml"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: ["Restart Docker"]
+
 - name: Configure Docker daemon options (flags)
   ansible.builtin.template:
     src: "etc/systemd/system/docker.service.d/options.conf.j2"

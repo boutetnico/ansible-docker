@@ -381,16 +381,7 @@ docker__apt_repository: >
   {{ ansible_distribution_release }} {{ docker__channel | join (' ') }}
 ```
 
-### Installing Python packages with Virtualenv and PIP
-
-#### Configuring Virtualenv
-
-Rather than pollute your server's version of Python, all PIP packages are
-installed into a Virtualenv of your choosing.
-
-```yml
-docker__pip_virtualenv: "/usr/local/lib/docker/virtualenv"
-```
+### Installing Python packages with PIP
 
 #### Installing PIP and its dependencies
 
@@ -401,10 +392,9 @@ PIP package.
 ```yml
 docker__pip_dependencies:
   - "gcc"
-  - "python3-setuptools"
-  - "python3-dev"
-  - "python3-pip"
-  - "virtualenv"
+  - "python-setuptools"
+  - "python{{ '3' if ansible_python.version.major == 3 else '' }}-dev"
+  - "python{{ '3' if ansible_python.version.major == 3 else '' }}-pip"
 ```
 
 #### Installing PIP packages
@@ -415,8 +405,6 @@ docker__default_pip_packages:
     state: "{{ docker__pip_docker_state }}"
   - name: "docker-compose"
     version: "{{ docker__compose_version }}"
-    path: "/usr/local/bin/docker-compose"
-    src: "{{ docker__pip_virtualenv + '/bin/docker-compose' }}"
     state: "{{ docker__pip_docker_compose_state }}"
 
 # Add your own PIP packages with the same properties as above.

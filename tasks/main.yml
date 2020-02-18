@@ -70,6 +70,15 @@
   when: docker__default_daemon_json | d() or docker__daemon_json | d()
   notify: ["Restart Docker"]
 
+- name: Configure containerd options
+  template:
+    src: "etc/containerd/config.toml.j2"
+    dest: "/etc/containerd/config.toml"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: ["Restart Docker"]
+
 - name: Configure Docker daemon options (flags)
   template:
     src: "etc/systemd/system/docker.service.d/options.conf.j2"

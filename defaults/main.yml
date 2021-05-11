@@ -44,6 +44,7 @@ docker__package_dependencies:
   - "cron"
   - "gnupg2"
   - "software-properties-common"
+  - "libffi-dev"
 
 docker__architecture_map:
   "x86_64": "amd64"
@@ -61,7 +62,7 @@ docker__apt_repository: >
 
 docker__pip_dependencies:
   - "gcc"
-  - "python-setuptools"
+  - "python{{ '3' if ansible_python.version.major == 3 else '' }}-setuptools"
   - "python{{ '3' if ansible_python.version.major == 3 else '' }}-dev"
   - "python{{ '3' if ansible_python.version.major == 3 else '' }}-pip"
 

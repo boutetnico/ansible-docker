@@ -166,7 +166,7 @@ ansible all -m apt -a "name=docker-compose-plugin autoremove=true purge=true sta
 
 ### Installing Docker Compose v1
 
-Docker Compose v1 will get PIP installed inside of a Virtualenv. If you plan to
+Docker Compose v1 will get PIP installed. If you plan to
 use Docker Compose v2 instead it will be very easy to skip installing v1
 although technically both can be installed together since v1 is accessed with
 `docker-compose` and v2 is accessed with `docker compose` (notice the lack of
@@ -392,7 +392,7 @@ PIP package.
 ```yml
 docker__pip_dependencies:
   - "gcc"
-  - "python-setuptools"
+  - "python{{ '3' if ansible_python.version.major == 3 else '' }}-setuptools"
   - "python{{ '3' if ansible_python.version.major == 3 else '' }}-dev"
   - "python{{ '3' if ansible_python.version.major == 3 else '' }}-pip"
 ```
@@ -440,20 +440,6 @@ That's it!
 Honestly, in the future I think this will be the default behavior. Since Docker
 Compsose v2 is still fairly new I wanted to ease into using v2. There's also no
 harm in having both installed together. You can pick which one to use.
-
-#### Working with Ansible's `docker_*` modules
-
-This role uses `docker_login` to login to a Docker registry, but you may also
-use the other `docker_*` modules in your own roles. They are not going to work
-unless you instruct Ansible to use this role's Virtualenv.
-
-At either the inventory, playbook or task level you'll need to set
-`ansible_python_interpreter: "/usr/bin/env python3-docker"`. This works because
-this role creates a proxy script from the Virtualenv's Python binary to
-`python3-docker`.
-
-You can look at this role's `docker_login` task as an example on how to do it
-at the task level.
 
 ## License
 

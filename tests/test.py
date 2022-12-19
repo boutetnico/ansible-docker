@@ -80,4 +80,4 @@ def test_docker_clean_up_cron_job(host):
 
 
 def test_python_docker_module(host):
-    assert 0 == host.run("python3-docker -c 'import docker'").rc
+    assert 0 == host.run("python3 -c 'import docker'").rc

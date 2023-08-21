@@ -14,11 +14,11 @@ def test_pinned_docker_version(host):
     assert existing_docker_version == docker_version_after_apt_update
 
 
-def test_docker_compose_v2_version(host):
+def test_docker_compose_version(host):
     assert 0 == host.run("docker compose version").rc
 
 
-def test_pinned_docker_compose_v2_version(host):
+def test_pinned_docker_compose_version(host):
     existing_docker_compose_version = host.check_output(
         "docker compose version"
     )
@@ -67,11 +67,6 @@ def test_customized_systemd_override(host):
     file_contents = host.file(unit_file).content_string
 
     assert "ATest" in file_contents
-
-
-def test_docker_compose_v1_is_pip_installed_and_symlinked(host):
-    assert 0 == host.run("docker-compose --version").rc
-
 
 def test_docker_clean_up_cron_job(host):
     cron_conf = host.file("/etc/cron.d/docker-disk-clean-up").content_string

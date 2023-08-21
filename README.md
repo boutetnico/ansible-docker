@@ -3,8 +3,8 @@
 It is an [Ansible](http://www.ansible.com/home) role to:
 
 - Install Docker (editions, channels and version pinning are all supported)
-- Install Docker Compose v1 and Docker Compose v2 (version pinning is supported)
-- Install the `docker` PIP package so Ansible's `docker_*` modules work
+- Install Docker Compose
+- Install the `python3-docker` package so Ansible's `docker_*` modules work
 - Manage Docker registry login credentials
 - Configure 1 or more users to run Docker without needing root access
 - Configure the Docker daemon's options and environment variables
@@ -40,8 +40,8 @@ a way to customize nearly everything.
 
 ### What's configured by default?
 
-The latest Docker CE, Docker Compose v1 and Docker Compose v2 will be
-installed, Docker disk clean up will happen once a week and Docker container
+The latest Docker CE, Docker Compose will be installed.
+Docker disk clean up will happen once a week and Docker container
 logs will be sent to `journald`.
 
 ### Example playbook
@@ -128,71 +128,10 @@ ansible all -m systemd -a "name=docker-ce state=stopped" \
   -m apt -a "name=docker-ce autoremove=true purge=true state=absent" -b
 ```
 
-### Installing Docker Compose v2
+### Installing Docker Compose
 
-Docker Compose v2 will get apt installed using the official
+Docker Compose will get apt installed using the official
 `docker-compose-plugin` that Docker manages.
-
-#### Version
-
-- When set to "", the current latest version of Docker Compose v2 will be installed
-- When set to a specific version, that version of Docker Compose v2 will be installed
-and pinned
-
-```yml
-docker__compose_v2_version: ""
-
-# For example, pin it to 2.6.
-docker__compose_v2_version: "2.6"
-
-# For example, pin it to a more precise version of 2.6.
-docker__compose_v2_version: "2.6.0"
-```
-
-##### Upgrade strategy
-
-It'll re-use the `docker__state` variable explained above in the Docker section
-with the same rules.
-
-##### Downgrade strategy
-
-Like Docker itself, the easiest way to uninstall Docker Compose v2 is to manually
-run the command below and then pin a specific Docker Compose v2 version.
-
-```sh
-# An ad-hoc Ansible command to remove the Docker Compose Plugin package on all hosts.
-ansible all -m apt -a "name=docker-compose-plugin autoremove=true purge=true state=absent" -b
-```
-
-### Installing Docker Compose v1
-
-Docker Compose v1 will get PIP installed. If you plan to
-use Docker Compose v2 instead it will be very easy to skip installing v1
-although technically both can be installed together since v1 is accessed with
-`docker-compose` and v2 is accessed with `docker compose` (notice the lack of
-hyphen).
-
-In any case details about this is covered in detail in a later section of this
-README file.
-
-#### Version
-
-- When set to "", the current latest version of Docker Compose v1 will be installed
-- When set to a specific version, that version of Docker Compose v1 will be installed
-and pinned
-
-```yml
-docker__compose_version: ""
-
-# For example, pin it to 1.29.
-docker__compose_version: "1.29"
-
-# For example, pin it to a more precise version of 1.29.
-docker__compose_version: "1.29.2"
-```
-
-*Upgrade and downgrade strategies will be explained in the other section of this
-README.*
 
 ### Configuring users to run Docker without root
 
@@ -380,66 +319,6 @@ docker__apt_repository: >
   https://download.docker.com/linux/{{ ansible_distribution | lower }}
   {{ ansible_distribution_release }} {{ docker__channel | join (' ') }}
 ```
-
-### Installing Python packages with PIP
-
-#### Installing PIP and its dependencies
-
-This role installs PIP because Docker Compose v1 is installed with the
-`docker-compose` PIP package and Ansible's `docker_*` modules use the `docker`
-PIP package.
-
-```yml
-docker__pip_dependencies:
-  - "gcc"
-  - "python{{ '3' if ansible_python.version.major == 3 else '' }}-setuptools"
-  - "python{{ '3' if ansible_python.version.major == 3 else '' }}-dev"
-  - "python{{ '3' if ansible_python.version.major == 3 else '' }}-pip"
-```
-
-#### Installing PIP packages
-
-```yml
-docker__default_pip_packages:
-  - name: "docker"
-    state: "{{ docker__pip_docker_state }}"
-  - name: "docker-compose"
-    version: "{{ docker__compose_version }}"
-    state: "{{ docker__pip_docker_compose_state }}"
-
-# Add your own PIP packages with the same properties as above.
-docker__pip_packages: []
-```
-
-*Properties prefixed with \* are required.*
-
-- *`name` is the package name
-- `version` is the package version to be installed (or "" if this is not defined)
-- `path` is the destination path of the symlink
-- `src` is the source path to be symlinked
-- `state` defaults to "present", other values can be "forcereinstall" or "absent"
-
-##### PIP package state
-
-- When set to `"present"`, the package will be installed but not updated on
-future runs
-- When set to `"forcereinstall"`, the package will always be (re)installed and
-updated on future runs
-- When set to `"absent"`, the package will be removed
-
-```yml
-docker__pip_docker_state: "present"
-docker__pip_docker_compose_state: "present"
-```
-
-##### Skipping the installation of Docker Compose v1
-
-You can set `docker__pip_docker_compose_state: "absent"` in your inventory.
-That's it!
-
-Honestly, in the future I think this will be the default behavior. Since Docker
-Compsose v2 is still fairly new I wanted to ease into using v2. There's also no
-harm in having both installed together. You can pick which one to use.
 
 ## License
 

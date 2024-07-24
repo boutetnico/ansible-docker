@@ -285,41 +285,6 @@ format for every Sunday at midnight
 - `user` defaults to the first `docker__users` user or root if that's not available
 - `state` defaults to "present", when "absent" the cron file will be removed
 
-### Configuring the APT package manager
-
-Docker requires a few dependencies to be installed for it to work. You shouldn't
-have to edit any of these variables.
-
-```yml
-# List of packages to be installed.
-docker__package_dependencies:
-  - "apt-transport-https"
-  - "ca-certificates"
-  - "cron"
-  - "gnupg2"
-  - "software-properties-common"
-
-# Ansible identifies CPU architectures differently than Docker.
-docker__architecture_map:
-  "x86_64": "amd64"
-  "aarch64": "arm64"
-  "aarch": "arm64"
-  "armhf": "armhf"
-  "armv7l": "armhf"
-
-# The Docker GPG key id used to sign the Docker package.
-docker__apt_key_id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-
-# The Docker GPG key server address.
-docker__apt_key_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
-
-# The Docker upstream APT repository.
-docker__apt_repository: >
-  deb [arch={{ docker__architecture_map[ansible_architecture] }}]
-  https://download.docker.com/linux/{{ ansible_distribution | lower }}
-  {{ ansible_distribution_release }} {{ docker__channel | join (' ') }}
-```
-
 ## License
 
 MIT

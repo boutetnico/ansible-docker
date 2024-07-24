@@ -31,10 +31,9 @@
   when: docker__compose_version | d()
 
 - name: Install Docker's dependencies
-  retries: 20
-  delay: 15
   ansible.builtin.apt:
     name: "{{ docker__package_dependencies }}"
+    update_cache: true
 
 - name: Add Docker's public GPG key to the APT keyring
   ansible.builtin.apt_key:
@@ -67,8 +66,6 @@
   notify: ["Restart Docker"]
 
 - name: Install Docker and Docker Compose
-  retries: 20
-  delay: 15
   ansible.builtin.apt:
     name:
       - "docker-{{ docker__edition }}"
@@ -76,11 +73,8 @@
     state: "{{ docker__state }}"
 
 - name: Install Docker python package
-  retries: 20
-  delay: 15
   ansible.builtin.apt:
-    name:
-      - "python3-docker"
+    name: python3-docker
     state: present
 
 - name: Add user(s) to "docker" group

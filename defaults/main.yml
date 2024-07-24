@@ -44,6 +44,7 @@ docker__package_dependencies:
   - "gnupg2"
   - "software-properties-common"
   - "libffi-dev"
+  - "python3-debian"
 
 docker__architecture_map:
   "x86_64": "amd64"
@@ -52,9 +53,6 @@ docker__architecture_map:
   "armhf": "armhf"
   "armv7l": "armhf"
 
-docker__apt_key_id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-docker__apt_key_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
-docker__apt_repository: >
-  deb [arch={{ docker__architecture_map[ansible_architecture] }}]
-  https://download.docker.com/linux/{{ ansible_distribution | lower }}
-  {{ ansible_distribution_release }} {{ docker__channel | join (' ') }}
+docker_apt_signed_by: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+
+docker_apt_uris: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
